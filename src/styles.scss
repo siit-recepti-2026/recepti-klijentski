@@ -10,11 +10,44 @@ html {
   @include mat.theme(
     (
       color: (
+        // Samo svetla tema: bez ovoga Material koristi CSS funkciju light-dark(),
+        // koju Safari stariji od 17.5 ne podrzava, pa boje i dugmad nestaju
+        theme-type: light,
         primary: mat.$azure-palette,
         tertiary: mat.$blue-palette,
       ),
       typography: Roboto,
       density: 0,
+    )
+  );
+
+  // Paleta tima: Smoky Black #11120D, Olive Drab #565449, Bone #D8CFBC, Floral White #FFFBF4.
+  // Material boje se preslikavaju na paletu, pa je sve komponente (dugmad, polja, kartice) koriste same.
+  @include mat.theme-overrides(
+    (
+      primary: #565449,
+      on-primary: #fffbf4,
+      primary-container: #d8cfbc,
+      on-primary-container: #11120d,
+      secondary: #565449,
+      on-secondary: #fffbf4,
+      secondary-container: #d8cfbc,
+      on-secondary-container: #11120d,
+      surface-tint: #565449,
+      background: #fffbf4,
+      on-background: #11120d,
+      surface: #fffbf4,
+      on-surface: #11120d,
+      on-surface-variant: #565449,
+      surface-container-lowest: #ffffff,
+      surface-container-low: #fbf6ec,
+      surface-container: #f4eee2,
+      surface-container-high: #eee7d9,
+      surface-container-highest: #e7dfce,
+      outline: #565449,
+      outline-variant: #d8cfbc,
+      inverse-surface: #11120d,
+      inverse-on-surface: #fffbf4,
     )
   );
 }
