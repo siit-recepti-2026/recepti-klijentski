@@ -1,0 +1,32 @@
+<mat-form-field appearance="outline" subscriptSizing="dynamic">
+  <mat-label>Pretraga</mat-label>
+  <input matInput #upit (input)="pretrazi(upit.value)" />
+</mat-form-field>
+
+<table mat-table [dataSource]="izvor" matSort matSortActive="naziv" matSortDirection="asc">
+  <ng-container matColumnDef="naziv">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Naziv</th>
+    <td mat-cell *matCellDef="let stavka">{{ stavka.naziv }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="opis">
+    <th mat-header-cell *matHeaderCellDef>Opis</th>
+    <td mat-cell *matCellDef="let stavka">{{ stavka.opis || '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="aktivan">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let stavka">{{ stavka.aktivan ? 'Aktivno' : 'Neaktivno' }}</td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="kolone"></tr>
+  <tr mat-row *matRowDef="let stavka; columns: kolone"></tr>
+
+  <tr *matNoDataRow>
+    <td class="mat-mdc-cell" [attr.colspan]="kolone.length">
+      {{ izvor.filter ? 'Nema rezultata pretrage.' : 'Nema unetih stavki.' }}
+    </td>
+  </tr>
+</table>
+
+<mat-paginator aria-label="Strane tabele" [pageSize]="10" [pageSizeOptions]="[5, 10, 25]" />

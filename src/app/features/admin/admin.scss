@@ -1,0 +1,11 @@
+.admin-pregled {
+  max-width: 72rem;
+  margin-inline: auto;
+  padding: 1.5rem clamp(1rem, 4vw, 3rem);
+}
+
+h1 {
+  font: var(--mat-sys-headline-medium);
+  color: var(--mat-sys-on-surface);
+  margin: 0 0 1rem;
+}
