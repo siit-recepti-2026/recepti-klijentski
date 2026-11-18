@@ -9,15 +9,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 
+import { RouterModule } from '@angular/router';
 import { AuthRoutingModule } from './auth-routing.module';
+import { Aktivacija } from './aktivacija/aktivacija';
 import { Auth } from './auth';
 import { Registracija } from './registracija/registracija';
 
 @NgModule({
-  declarations: [Auth, Registracija],
+  declarations: [Auth, Registracija, Aktivacija],
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterModule,
     AuthRoutingModule,
     MatButtonModule,
     MatCardModule,

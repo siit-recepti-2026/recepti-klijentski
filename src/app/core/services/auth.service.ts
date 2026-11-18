@@ -24,4 +24,12 @@ export class AuthService {
       .get<DostupnostOdgovor>(`${this.url}/dostupnost/email`, { params: { vrednost } })
       .pipe(map((odgovor) => odgovor.dostupno));
   }
+
+  aktiviraj(token: string): Observable<PorukaOdgovor> {
+    return this.http.post<PorukaOdgovor>(`${this.url}/aktivacija`, { token });
+  }
+
+  ponovoPosaljiAktivaciju(email: string): Observable<PorukaOdgovor> {
+    return this.http.post<PorukaOdgovor>(`${this.url}/aktivacija/ponovo`, { email });
+  }
 }
