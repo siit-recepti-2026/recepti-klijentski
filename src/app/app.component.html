@@ -1,1 +1,9 @@
-<router-outlet />
+<mat-toolbar class="traka">
+  <a class="naziv" routerLink="/pocetna">Recepti</a>
+  <span class="razmak"></span>
+  <a mat-button routerLink="/auth/registracija" routerLinkActive="aktivan">Registracija</a>
+</mat-toolbar>
+
+<main>
+  <router-outlet />
+</main>
