@@ -1,7 +1,16 @@
 <mat-toolbar class="traka">
   <a class="naziv" routerLink="/pocetna">Recepti</a>
   <span class="razmak"></span>
-  <a mat-button routerLink="/auth/registracija" routerLinkActive="aktivan">Registracija</a>
+  @if (authService.prijavljen()) {
+    @if (authService.jeAdministrator()) {
+      <a mat-button routerLink="/admin" routerLinkActive="aktivan">Administracija</a>
+    }
+    <span class="korisnik">{{ authService.korisnickoIme() }}</span>
+    <button mat-stroked-button type="button" (click)="odjavi()">Odjava</button>
+  } @else {
+    <a mat-button routerLink="/auth/prijava" routerLinkActive="aktivan">Prijava</a>
+    <a mat-flat-button routerLink="/auth/registracija">Registracija</a>
+  }
 </mat-toolbar>
 
 <main>

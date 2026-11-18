@@ -1,4 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -7,5 +9,11 @@ import { Component, signal } from '@angular/core';
   templateUrl: './app.component.html',
 })
 export class App {
-  protected readonly title = signal('recepti-klijentski');
+  protected readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  protected odjavi(): void {
+    this.authService.odjavi();
+    this.router.navigate(['/auth/prijava']);
+  }
 }

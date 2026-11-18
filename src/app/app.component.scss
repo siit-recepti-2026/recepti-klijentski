@@ -20,3 +20,9 @@
 .aktivan {
   background: var(--mat-sys-surface);
 }
+
+.korisnik {
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0 8px;
+}

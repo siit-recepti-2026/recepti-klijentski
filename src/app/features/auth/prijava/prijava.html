@@ -1,0 +1,50 @@
+<h2>Prijava</h2>
+<p class="podnaslov">Prijavite se korisničkim imenom ili emailom.</p>
+
+<form [formGroup]="forma" (ngSubmit)="posalji()" novalidate>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Korisničko ime ili email</mat-label>
+    <input matInput formControlName="korisnickoImeIliEmail" autocomplete="username" />
+    @if (forma.controls.korisnickoImeIliEmail.hasError('required')) {
+      <mat-error>Unesite korisničko ime ili email</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>Lozinka</mat-label>
+    <input
+      matInput
+      [type]="prikaziLozinku() ? 'text' : 'password'"
+      formControlName="lozinka"
+      autocomplete="current-password"
+    />
+    <button
+      mat-icon-button
+      matSuffix
+      type="button"
+      (click)="prikaziLozinku.set(!prikaziLozinku())"
+      [attr.aria-label]="prikaziLozinku() ? 'Sakrij lozinku' : 'Prikaži lozinku'"
+    >
+      <mat-icon fontSet="material-symbols-outlined">{{
+        prikaziLozinku() ? 'visibility_off' : 'visibility'
+      }}</mat-icon>
+    </button>
+    @if (forma.controls.lozinka.hasError('required')) {
+      <mat-error>Unesite lozinku</mat-error>
+    }
+  </mat-form-field>
+
+  @if (greska()) {
+    <p class="greska" role="alert">{{ greska() }}</p>
+  }
+
+  <button mat-flat-button type="submit" [disabled]="salje()">
+    @if (salje()) {
+      <mat-spinner diameter="20" />
+    } @else {
+      Prijavi se
+    }
+  </button>
+</form>
+
+<p class="dole">Nemate nalog? <a routerLink="/auth/registracija">Registrujte se</a></p>
