@@ -13,10 +13,11 @@ import { RouterModule } from '@angular/router';
 import { AuthRoutingModule } from './auth-routing.module';
 import { Aktivacija } from './aktivacija/aktivacija';
 import { Auth } from './auth';
+import { Prijava } from './prijava/prijava';
 import { Registracija } from './registracija/registracija';
 
 @NgModule({
-  declarations: [Auth, Registracija, Aktivacija],
+  declarations: [Auth, Registracija, Aktivacija, Prijava],
   imports: [
     CommonModule,
     ReactiveFormsModule,

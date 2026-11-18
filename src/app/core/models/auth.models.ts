@@ -29,3 +29,25 @@ export interface GreskaOdgovor {
   poruka: string;
   greske: Record<string, string>;
 }
+
+export interface PrijavaZahtev {
+  korisnickoImeIliEmail: string;
+  lozinka: string;
+}
+
+export type Uloga = 'KORISNIK' | 'ADMINISTRATOR';
+
+export interface PrijavaOdgovor {
+  token: string;
+  istice: string;
+  korisnickoIme: string;
+  uloga: Uloga;
+}
+
+//Podaci o prijavljenom korisniku koji se cuvaju u localStorage
+export interface Sesija {
+  token: string;
+  istice: string;
+  korisnickoIme: string;
+  uloga: Uloga;
+}
