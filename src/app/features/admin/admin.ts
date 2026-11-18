@@ -32,10 +32,18 @@ export class Admin implements OnInit {
     this.ucitaj();
   }
 
-  protected dodajUPrikaz(vrsta: VrstaListe, stavka: StavkaPregleda): void {
-    this.pregled.update(
-      (pregled) => pregled && { ...pregled, [vrsta]: [...pregled[vrsta], stavka] },
-    );
+  protected sacuvajUPrikaz(vrsta: VrstaListe, stavka: StavkaPregleda): void {
+    this.pregled.update((pregled) => {
+      if (!pregled) {
+        return pregled;
+      }
+
+      const lista = pregled[vrsta];
+      const stavke = lista.some((postojeca) => postojeca.id === stavka.id)
+        ? lista.map((postojeca) => (postojeca.id === stavka.id ? stavka : postojeca))
+        : [...lista, stavka];
+      return { ...pregled, [vrsta]: stavke };
+    });
   }
 
   protected ucitaj(): void {

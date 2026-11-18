@@ -1,9 +1,24 @@
-import { AfterViewInit, Component, Input, ViewChild } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  AfterViewInit,
+  Component,
+  DestroyRef,
+  Input,
+  TemplateRef,
+  ViewChild,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, MatPaginatorIntl } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 
-import { StavkaPregleda } from './admin-pregled.service';
+import { filter, finalize, switchMap } from 'rxjs';
+
+import { AdminPregledService, StavkaPregleda, VrstaListe } from './admin-pregled.service';
 
 function paginatorNaSrpskom(): MatPaginatorIntl {
   const paginator = new MatPaginatorIntl();
@@ -28,6 +43,17 @@ function paginatorNaSrpskom(): MatPaginatorIntl {
   styles: ['mat-form-field { margin-top: 1rem; width: min(100%, 24rem); }'],
 })
 export class AdminTabela implements AfterViewInit {
+  private readonly service = inject(AdminPregledService);
+  private readonly dialog = inject(MatDialog);
+  private readonly destroyRef = inject(DestroyRef);
+
+  @Input() vrsta: VrstaListe | null = null;
+  readonly izmeni = output<StavkaPregleda>();
+  readonly deaktivirano = output<StavkaPregleda>();
+  protected readonly deaktiviranje = signal(false);
+  protected readonly greskaDeaktivacije = signal('');
+  protected readonly porukaDeaktivacije = signal('');
+
   @Input({ required: true }) set stavke(stavke: StavkaPregleda[]) {
     this.izvor.data = stavke;
   }
@@ -39,7 +65,10 @@ export class AdminTabela implements AfterViewInit {
   protected readonly izvor = new MatTableDataSource<StavkaPregleda>();
 
   protected get kolone(): string[] {
-    return this.prikaziOpis ? ['naziv', 'opis', 'aktivan'] : ['naziv', 'aktivan'];
+    if (this.prikaziOpis) {
+      return ['naziv', 'opis', 'aktivan'];
+    }
+    return this.vrsta ? ['naziv', 'aktivan', 'akcije'] : ['naziv', 'aktivan'];
   }
 
   constructor() {
@@ -61,5 +90,41 @@ export class AdminTabela implements AfterViewInit {
   protected pretrazi(upit: string): void {
     this.izvor.filter = upit.trim().toLocaleLowerCase('sr-Latn');
     this.paginator.firstPage();
+  }
+  protected traziPotvrdu(stavka: StavkaPregleda, potvrda: TemplateRef<unknown>): void {
+    const vrsta = this.vrsta;
+    if (!vrsta || this.deaktiviranje()) {
+      return;
+    }
+
+    this.greskaDeaktivacije.set('');
+    this.porukaDeaktivacije.set('');
+    this.deaktiviranje.set(true);
+    this.dialog
+      .open<unknown, StavkaPregleda, boolean>(potvrda, { data: stavka })
+      .afterClosed()
+      .pipe(
+        filter((potvrdjeno) => potvrdjeno === true),
+        switchMap(() => this.service.deaktiviraj(vrsta, stavka.id)),
+        takeUntilDestroyed(this.destroyRef),
+        finalize(() => this.deaktiviranje.set(false)),
+      )
+      .subscribe({
+        next: (deaktiviranaStavka) => {
+          this.deaktivirano.emit(deaktiviranaStavka);
+          this.porukaDeaktivacije.set('Stavka je deaktivirana.');
+        },
+        error: (greska: HttpErrorResponse) => {
+          if (greska.status === 409) {
+            this.greskaDeaktivacije.set('Stavka je u upotrebi i ne može da se deaktivira.');
+          } else if (greska.status === 401 || greska.status === 403) {
+            this.greskaDeaktivacije.set('Deaktivacija je dostupna prijavljenom administratoru.');
+          } else {
+            this.greskaDeaktivacije.set(
+              'Deaktivacija nije uspela. Osveži stranicu i pokušaj ponovo.',
+            );
+          }
+        },
+      });
   }
 }
