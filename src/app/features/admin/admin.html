@@ -1,1 +1,23 @@
-<p>admin works!</p>
+<section class="admin-pregled" aria-labelledby="naslov-admina">
+  <h1 id="naslov-admina">Tipovi, kategorije i alergeni</h1>
+
+  @if (pregled(); as podaci) {
+    <mat-tab-group>
+      @for (tabela of tabele; track tabela.kljuc) {
+        <mat-tab [label]="tabela.naslov">
+          <ng-template matTabContent>
+            <app-admin-tabela
+              [stavke]="podaci[tabela.kljuc]"
+              [prikaziOpis]="tabela.kljuc === 'alergeni'"
+            />
+          </ng-template>
+        </mat-tab>
+      }
+    </mat-tab-group>
+  } @else if (greska()) {
+    <p role="alert">{{ greska() }}</p>
+    <button mat-stroked-button type="button" (click)="ucitaj()">Pokušaj ponovo</button>
+  } @else {
+    <p role="status">Učitavanje pregleda…</p>
+  }
+</section>
