@@ -1,0 +1,55 @@
+.centar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+
+  h2 {
+    margin: 8px 0 0;
+    font: var(--mat-sys-headline-small);
+  }
+
+  p {
+    margin: 0 0 8px;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.6;
+  }
+}
+
+.ikonica {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+
+  &.uspeh {
+    color: var(--mat-sys-primary);
+  }
+
+  &.greska {
+    color: var(--mat-sys-error);
+  }
+}
+
+.objasnjenje {
+  margin: 24px 0 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+button {
+  height: 44px;
+}
+
+.obavestenje {
+  margin: 24px 0 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}

@@ -26,6 +26,7 @@ export class Registracija {
   protected readonly greska = signal<string | null>(null);
   protected readonly uspesno = signal<string | null>(null);
   protected readonly prikaziLozinku = signal(false);
+  protected readonly ponovoPoslato = signal<string | null>(null);
 
   protected readonly forma = this.fb.nonNullable.group(
     {
@@ -84,5 +85,12 @@ export class Registracija {
           this.greska.set(primeniGreskeServera(this.forma, greska));
         },
       });
+  }
+
+  protected posaljiPonovo(email: string): void {
+    this.authService.ponovoPosaljiAktivaciju(email).subscribe({
+      next: (odgovor) => this.ponovoPoslato.set(odgovor.poruka),
+      error: () => this.ponovoPoslato.set('Slanje nije uspelo. Pokušajte ponovo kasnije.'),
+    });
   }
 }

@@ -5,6 +5,13 @@
       Poslali smo link za aktivaciju na <strong>{{ email }}</strong>. Nalog aktivirate klikom na
       link iz mejla, a link važi 24 sata.
     </p>
+    @if (ponovoPoslato(); as poruka) {
+      <p class="obavestenje">{{ poruka }}</p>
+    } @else {
+      <button mat-button type="button" (click)="posaljiPonovo(email)">
+        Mejl nije stigao? Pošalji ponovo
+      </button>
+    }
   </div>
 } @else {
   <h2>Registracija</h2>

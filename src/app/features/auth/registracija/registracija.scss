@@ -43,3 +43,10 @@ mat-spinner {
     line-height: 1.6;
   }
 }
+
+.obavestenje {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}

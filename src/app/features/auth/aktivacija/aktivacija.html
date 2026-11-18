@@ -1,0 +1,43 @@
+@switch (stanje()) {
+  @case ('aktiviranje') {
+    <div class="centar" role="status">
+      <mat-spinner diameter="40" />
+      <p>Aktiviramo nalog…</p>
+    </div>
+  }
+  @case ('aktiviran') {
+    <div class="centar" role="status">
+      <mat-icon class="ikonica uspeh" fontSet="material-symbols-outlined">check_circle</mat-icon>
+      <h2>Nalog je aktiviran</h2>
+      <p>Sada se možete prijaviti.</p>
+      <a mat-flat-button routerLink="/pocetna">Nastavi</a>
+    </div>
+  }
+  @case ('greska') {
+    <div class="centar">
+      <mat-icon class="ikonica greska" fontSet="material-symbols-outlined">error</mat-icon>
+      <h2>Aktivacija nije uspela</h2>
+      <p role="alert">{{ poruka() }}</p>
+    </div>
+
+    @if (porukaSlanja(); as porukaSlanja) {
+      <p class="obavestenje" role="status">{{ porukaSlanja }}</p>
+    } @else {
+      <p class="objasnjenje">
+        Unesite email sa kojim ste se registrovali i poslaćemo vam novi link.
+      </p>
+      <form (ngSubmit)="posaljiPonovo()" novalidate>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" [formControl]="email" autocomplete="email" />
+          @if (email.hasError('required')) {
+            <mat-error>Email je obavezan</mat-error>
+          } @else if (email.hasError('email')) {
+            <mat-error>Email nije u ispravnom formatu</mat-error>
+          }
+        </mat-form-field>
+        <button mat-flat-button type="submit" [disabled]="salje()">Pošalji novi link</button>
+      </form>
+    }
+  }
+}
