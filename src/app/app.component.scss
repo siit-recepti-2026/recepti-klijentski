@@ -1,0 +1,22 @@
+.traka {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  gap: 8px;
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+
+.naziv {
+  font: var(--mat-sys-title-large);
+  color: var(--mat-sys-on-secondary-container);
+  text-decoration: none;
+}
+
+.razmak {
+  flex: 1;
+}
+
+.aktivan {
+  background: var(--mat-sys-surface);
+}

@@ -1,0 +1,45 @@
+h2 {
+  margin: 0 0 4px;
+  font: var(--mat-sys-headline-small);
+}
+
+.podnaslov {
+  margin: 0 0 24px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+button[type='submit'] {
+  margin-top: 8px;
+  height: 44px;
+}
+
+mat-spinner {
+  margin: 0 auto;
+}
+
+.greska {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.uspeh {
+  text-align: center;
+
+  p {
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.6;
+  }
+}

@@ -1,0 +1,15 @@
+//Zajednicki okvir za stranice registracije, aktivacije i prijave
+.okvir {
+  display: flex;
+  justify-content: center;
+  padding: 48px 16px;
+}
+
+mat-card {
+  width: 100%;
+  max-width: 440px;
+}
+
+mat-card-content {
+  padding: 32px 28px 28px;
+}
