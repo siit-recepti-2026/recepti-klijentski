@@ -6,16 +6,21 @@
       @for (tabela of tabele; track tabela.kljuc) {
         <mat-tab [label]="tabela.naslov">
           <ng-template matTabContent>
-            @if (tabela.kljuc !== 'alergeni') {
-              <app-admin-dodavanje
+            @if (tabela.kljuc === 'alergeni') {
+              <app-admin-tabela [stavke]="podaci.alergeni" [prikaziOpis]="true" />
+            } @else {
+              <app-admin-forma-stavke
+                #forma
                 [vrsta]="tabela.kljuc"
-                (dodato)="dodajUPrikaz(tabela.kljuc, $event)"
+                (sacuvano)="sacuvajUPrikaz(tabela.kljuc, $event)"
+              />
+              <app-admin-tabela
+                [stavke]="podaci[tabela.kljuc]"
+                [vrsta]="tabela.kljuc"
+                (izmeni)="forma.izaberiZaIzmenu($event)"
+                (deaktivirano)="sacuvajUPrikaz(tabela.kljuc, $event)"
               />
             }
-            <app-admin-tabela
-              [stavke]="podaci[tabela.kljuc]"
-              [prikaziOpis]="tabela.kljuc === 'alergeni'"
-            />
           </ng-template>
         </mat-tab>
       }

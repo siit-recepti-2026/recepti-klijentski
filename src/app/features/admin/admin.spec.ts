@@ -34,11 +34,16 @@ describe('Admin', () => {
           provide: AdminPregledService,
           useValue: {
             dodaj: (_vrsta: string, naziv: string) =>
-              of({ id: 20, naziv, opis: null, aktivan: true }),
+              of({
+                stavka: { id: naziv === 'Užina' ? 7 : 20, naziv, opis: null, aktivan: true },
+                ponovoAktivirana: naziv === 'Užina',
+              }),
+            izmeni: (_vrsta: string, id: number, naziv: string) =>
+              of({ id, naziv, opis: null, aktivan: true }),
             pregled: () =>
               of({
                 tipoviJela: [],
-                tipoviObroka: [],
+                tipoviObroka: [{ id: 7, naziv: 'Užina', opis: null, aktivan: false }],
                 tipoviIshrane: [],
                 kategorijeNamirnica,
                 alergeni: [{ id: 1, naziv: 'Gluten', opis: 'Pšenica', aktivan: false }],
@@ -72,7 +77,9 @@ describe('Admin', () => {
 
     const search = await tab.getHarness(MatInputHarness.with({ ancestor: 'app-admin-tabela' }));
     await search.setValue('kategorija 02');
-    expect(await table.getCellTextByIndex()).toEqual([['Kategorija 02', 'Aktivno']]);
+    const redovi = await table.getCellTextByIndex();
+    expect(redovi).toHaveLength(1);
+    expect(redovi[0].slice(0, 2)).toEqual(['Kategorija 02', 'Aktivno']);
   });
 
   it('prikazuje opis i status postojećeg alergena', async () => {
@@ -88,7 +95,9 @@ describe('Admin', () => {
   it('dodaje aktivan tip jela i odmah ga prikazuje u tabeli', async () => {
     const tabs = await loader.getHarness(MatTabGroupHarness);
     const tab = await tabs.getSelectedTab();
-    const input = await tab.getHarness(MatInputHarness.with({ ancestor: 'app-admin-dodavanje' }));
+    const input = await tab.getHarness(
+      MatInputHarness.with({ ancestor: 'app-admin-forma-stavke' }),
+    );
     const button = await tab.getHarness(MatButtonHarness.with({ text: 'Dodaj' }));
 
     expect(await button.isDisabled()).toBe(true);
@@ -96,7 +105,51 @@ describe('Admin', () => {
     await button.click();
 
     const table = await tab.getHarness(MatTableHarness);
-    expect(await table.getCellTextByIndex()).toEqual([['Čorba', 'Aktivno']]);
+    const redovi = await table.getCellTextByIndex();
+    expect(redovi).toHaveLength(1);
+    expect(redovi[0].slice(0, 2)).toEqual(['Čorba', 'Aktivno']);
     expect(await input.getValue()).toBe('');
+  });
+
+  it('popunjava formu i menja naziv postojećeg reda', async () => {
+    const tabs = await loader.getHarness(MatTabGroupHarness);
+    await tabs.selectTab({ label: 'Kategorije namirnica' });
+    const tab = await tabs.getSelectedTab();
+    const izmeni = await tab.getHarness(
+      MatButtonHarness.with({ selector: '[aria-label="Izmeni Kategorija 01"]' }),
+    );
+    await izmeni.click();
+
+    const input = await tab.getHarness(
+      MatInputHarness.with({ ancestor: 'app-admin-forma-stavke' }),
+    );
+    expect(await input.getValue()).toBe('Kategorija 01');
+    await input.setValue('Ažurirana kategorija');
+    const sacuvaj = await tab.getHarness(MatButtonHarness.with({ text: 'Sačuvaj izmenu' }));
+    await sacuvaj.click();
+
+    const table = await tab.getHarness(MatTableHarness);
+    const prveStavke = await table.getCellTextByIndex();
+    expect(prveStavke[0].slice(0, 2)).toEqual(['Ažurirana kategorija', 'Aktivno']);
+  });
+
+  it('ponovo aktivira postojeći red kada se ponovo unese njegov naziv', async () => {
+    const tabs = await loader.getHarness(MatTabGroupHarness);
+    await tabs.selectTab({ label: 'Tipovi obroka' });
+    const tab = await tabs.getSelectedTab();
+    const table = await tab.getHarness(MatTableHarness);
+    const input = await tab.getHarness(
+      MatInputHarness.with({ ancestor: 'app-admin-forma-stavke' }),
+    );
+    const dodaj = await tab.getHarness(MatButtonHarness.with({ text: 'Dodaj' }));
+
+    expect((await table.getCellTextByIndex())[0].slice(0, 2)).toEqual(['Užina', 'Neaktivno']);
+    await input.setValue('Užina');
+    await dodaj.click();
+
+    const redovi = await table.getCellTextByIndex();
+    expect(redovi).toHaveLength(1);
+    expect(redovi[0].slice(0, 2)).toEqual(['Užina', 'Aktivno']);
+    expect(await tab.getTextContent()).toContain('Stavka je ponovo aktivirana.');
   });
 });

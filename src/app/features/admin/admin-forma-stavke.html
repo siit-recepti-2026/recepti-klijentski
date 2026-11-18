@@ -1,0 +1,23 @@
+<form class="forma" (submit)="$event.preventDefault(); sacuvaj()">
+  <mat-form-field appearance="outline" subscriptSizing="dynamic">
+    <mat-label>{{ izabranaStavka() ? 'Novi naziv stavke' : 'Naziv nove stavke' }}</mat-label>
+    <input matInput #nazivPolje [formControl]="naziv" maxlength="100" />
+  </mat-form-field>
+  <button mat-flat-button type="submit" [disabled]="naziv.invalid || cuvanje()">
+    @if (cuvanje()) {
+      Čuvanje…
+    } @else if (izabranaStavka()) {
+      Sačuvaj izmenu
+    } @else {
+      Dodaj
+    }
+  </button>
+  @if (izabranaStavka()) {
+    <button mat-button type="button" [disabled]="cuvanje()" (click)="odustani()">Odustani</button>
+  }
+</form>
+@if (greska(); as tekst) {
+  <p role="alert">{{ tekst }}</p>
+} @else if (poruka(); as tekst) {
+  <p role="status">{{ tekst }}</p>
+}

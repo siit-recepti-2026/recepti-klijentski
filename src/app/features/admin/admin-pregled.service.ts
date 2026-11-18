@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-
+import { map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export interface StavkaPregleda {
@@ -36,6 +36,30 @@ export class AdminPregledService {
   }
 
   dodaj(vrsta: VrstaListe, naziv: string) {
-    return this.http.post<StavkaPregleda>(`${environment.apiUrl}/admin/${putanjeLista[vrsta]}`, { naziv });
+    return this.http
+      .post<StavkaPregleda>(`${environment.apiUrl}/admin/${putanjeLista[vrsta]}`, { naziv }, {
+        observe: 'response',
+      })
+      .pipe(
+        map(({ body, status }) => {
+          if (!body) {
+            throw new Error('Nedostaje sačuvana stavka.');
+          }
+          return { stavka: body, ponovoAktivirana: status === 200 };
+        }),
+      );
+  }
+
+  izmeni(vrsta: VrstaListe, id: number, naziv: string) {
+    return this.http.put<StavkaPregleda>(
+      `${environment.apiUrl}/admin/${putanjeLista[vrsta]}/${id}`,
+      { naziv },
+    );
+  }
+
+  deaktiviraj(vrsta: VrstaListe, id: number) {
+    return this.http.delete<StavkaPregleda>(
+      `${environment.apiUrl}/admin/${putanjeLista[vrsta]}/${id}`,
+    );
   }
 }
