@@ -1,6 +1,7 @@
 import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatInputHarness } from '@angular/material/input/testing';
 import { MatPaginatorHarness } from '@angular/material/paginator/testing';
 import { MatSortHarness } from '@angular/material/sort/testing';
@@ -32,6 +33,8 @@ describe('Admin', () => {
         {
           provide: AdminPregledService,
           useValue: {
+            dodaj: (_vrsta: string, naziv: string) =>
+              of({ id: 20, naziv, opis: null, aktivan: true }),
             pregled: () =>
               of({
                 tipoviJela: [],
@@ -53,9 +56,10 @@ describe('Admin', () => {
   it('pretražuje, sortira i menja strane u tabeli', async () => {
     const tabs = await loader.getHarness(MatTabGroupHarness);
     await tabs.selectTab({ label: 'Kategorije namirnica' });
-    const table = await loader.getHarness(MatTableHarness);
-    const paginator = await loader.getHarness(MatPaginatorHarness);
-    const sort = await loader.getHarness(MatSortHarness);
+    const tab = await tabs.getSelectedTab();
+    const table = await tab.getHarness(MatTableHarness);
+    const paginator = await tab.getHarness(MatPaginatorHarness);
+    const sort = await tab.getHarness(MatSortHarness);
     const [naziv] = await sort.getSortHeaders({ label: 'Naziv' });
 
     expect(await table.getRows()).toHaveLength(10);
@@ -66,7 +70,7 @@ describe('Admin', () => {
     await naziv.click();
     expect((await table.getCellTextByIndex())[0][0]).toBe('Kategorija 12');
 
-    const search = await loader.getHarness(MatInputHarness);
+    const search = await tab.getHarness(MatInputHarness.with({ ancestor: 'app-admin-tabela' }));
     await search.setValue('kategorija 02');
     expect(await table.getCellTextByIndex()).toEqual([['Kategorija 02', 'Aktivno']]);
   });
@@ -74,8 +78,25 @@ describe('Admin', () => {
   it('prikazuje opis i status postojećeg alergena', async () => {
     const tabs = await loader.getHarness(MatTabGroupHarness);
     await tabs.selectTab({ label: 'Alergeni' });
-    const table = await loader.getHarness(MatTableHarness);
+    const tab = await tabs.getSelectedTab();
+    const table = await tab.getHarness(MatTableHarness);
 
     expect(await table.getCellTextByIndex()).toEqual([['Gluten', 'Pšenica', 'Neaktivno']]);
+    expect(await tab.getAllHarnesses(MatButtonHarness.with({ text: 'Dodaj' }))).toHaveLength(0);
+  });
+
+  it('dodaje aktivan tip jela i odmah ga prikazuje u tabeli', async () => {
+    const tabs = await loader.getHarness(MatTabGroupHarness);
+    const tab = await tabs.getSelectedTab();
+    const input = await tab.getHarness(MatInputHarness.with({ ancestor: 'app-admin-dodavanje' }));
+    const button = await tab.getHarness(MatButtonHarness.with({ text: 'Dodaj' }));
+
+    expect(await button.isDisabled()).toBe(true);
+    await input.setValue('  Čorba  ');
+    await button.click();
+
+    const table = await tab.getHarness(MatTableHarness);
+    expect(await table.getCellTextByIndex()).toEqual([['Čorba', 'Aktivno']]);
+    expect(await input.getValue()).toBe('');
   });
 });

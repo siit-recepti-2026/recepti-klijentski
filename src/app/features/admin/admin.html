@@ -2,10 +2,16 @@
   <h1 id="naslov-admina">Tipovi, kategorije i alergeni</h1>
 
   @if (pregled(); as podaci) {
-    <mat-tab-group>
+    <mat-tab-group [preserveContent]="true">
       @for (tabela of tabele; track tabela.kljuc) {
         <mat-tab [label]="tabela.naslov">
           <ng-template matTabContent>
+            @if (tabela.kljuc !== 'alergeni') {
+              <app-admin-dodavanje
+                [vrsta]="tabela.kljuc"
+                (dodato)="dodajUPrikaz(tabela.kljuc, $event)"
+              />
+            }
             <app-admin-tabela
               [stavke]="podaci[tabela.kljuc]"
               [prikaziOpis]="tabela.kljuc === 'alergeni'"

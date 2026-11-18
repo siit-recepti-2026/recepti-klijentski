@@ -1,7 +1,12 @@
 import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { AdminPregled, AdminPregledService } from './admin-pregled.service';
+import {
+  AdminPregled,
+  AdminPregledService,
+  StavkaPregleda,
+  VrstaListe,
+} from './admin-pregled.service';
 
 @Component({
   selector: 'app-admin',
@@ -25,6 +30,12 @@ export class Admin implements OnInit {
 
   ngOnInit(): void {
     this.ucitaj();
+  }
+
+  protected dodajUPrikaz(vrsta: VrstaListe, stavka: StavkaPregleda): void {
+    this.pregled.update(
+      (pregled) => pregled && { ...pregled, [vrsta]: [...pregled[vrsta], stavka] },
+    );
   }
 
   protected ucitaj(): void {
