@@ -1,5 +1,7 @@
 import {
   NgModule,
+  inject,
+  provideAppInitializer,
   provideBrowserGlobalErrorListeners,
   provideZoneChangeDetection,
 } from '@angular/core';
@@ -9,6 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { AppRoutingModule } from './app-routing.module';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { AuthService } from './core/services/auth.service';
 import { App } from './app.component';
 
 @NgModule({
@@ -18,6 +21,8 @@ import { App } from './app.component';
     provideBrowserGlobalErrorListeners(),
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideHttpClient(withInterceptors([authInterceptor])),
+    //Pri otvaranju aplikacije osvezava se token prijavljenog korisnika (ne ceka se odgovor)
+    provideAppInitializer(() => inject(AuthService).osveziSesiju()),
   ],
   bootstrap: [App],
 })
