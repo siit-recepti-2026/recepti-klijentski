@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { administratorGuard } from './core/guards/auth.guards';
+import { administratorGuard, prijavljenGuard } from './core/guards/auth.guards';
 
 const routes: Routes = [
   {
@@ -9,6 +9,7 @@ const routes: Routes = [
   },
   {
     path: 'profil',
+    canActivate: [prijavljenGuard],
     loadChildren: () => import('./features/profil/profil.module').then((m) => m.ProfilModule),
   },
   {

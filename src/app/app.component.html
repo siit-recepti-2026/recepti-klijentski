@@ -5,7 +5,9 @@
     @if (authService.jeAdministrator()) {
       <a mat-button routerLink="/admin" routerLinkActive="aktivan">Administracija</a>
     }
-    <span class="korisnik">{{ authService.korisnickoIme() }}</span>
+    <a mat-button class="korisnik" routerLink="/profil" routerLinkActive="aktivan">
+      {{ authService.korisnickoIme() }}
+    </a>
     <button mat-stroked-button type="button" (click)="odjavi()">Odjava</button>
   } @else {
     <a mat-button routerLink="/auth/prijava" routerLinkActive="aktivan">Prijava</a>
