@@ -1,0 +1,64 @@
+:host {
+  display: block;
+}
+
+.veza {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.kartica {
+  height: 100%;
+  overflow: hidden;
+  transition: box-shadow 150ms ease;
+}
+
+.veza:hover .kartica,
+.veza:focus-visible .kartica {
+  box-shadow: var(--mat-sys-level2);
+}
+
+.slika,
+.bez-slike {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+}
+
+.slika {
+  display: block;
+  object-fit: cover;
+}
+
+.bez-slike {
+  display: grid;
+  place-items: center;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+  font: var(--mat-sys-body-medium);
+}
+
+.sadrzaj {
+  padding-top: 0.75rem;
+}
+
+.naziv {
+  margin: 0 0 0.25rem;
+  font: var(--mat-sys-title-medium);
+  color: var(--mat-sys-on-surface);
+}
+
+.autor,
+.detalji,
+.tipovi,
+.alergeni {
+  margin: 0 0 0.25rem;
+  font: var(--mat-sys-body-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.alergeni {
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}

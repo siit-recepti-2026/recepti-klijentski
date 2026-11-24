@@ -1,0 +1,24 @@
+<a class="veza" [routerLink]="['/recepti', recept().id]">
+  <mat-card class="kartica" appearance="outlined">
+    @if (slikaNijeUcitana()) {
+      <div class="bez-slike">Bez slike</div>
+    } @else {
+      <img
+        class="slika"
+        [src]="slika()"
+        [alt]="recept().naziv"
+        (error)="slikaNijeUcitana.set(true)"
+      />
+    }
+
+    <mat-card-content class="sadrzaj">
+      <h3 class="naziv">{{ recept().naziv }}</h3>
+      <p class="autor">{{ recept().autor }}</p>
+      <p class="detalji">★ {{ ocena() }} · {{ vreme() }} · {{ porcije() }}</p>
+      <p class="tipovi">{{ tipovi() }}</p>
+      @if (recept().alergeni.length > 0) {
+        <p class="alergeni">Alergeni: {{ recept().alergeni.join(', ') }}</p>
+      }
+    </mat-card-content>
+  </mat-card>
+</a>
