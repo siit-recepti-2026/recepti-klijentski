@@ -1,1 +1,74 @@
-<p>profil works!</p>
+<div class="okvir">
+  @switch (stanje()) {
+    @case ('ucitavanje') {
+      <mat-spinner diameter="40" />
+    }
+
+    @case ('prikaz') {
+      @if (profil(); as p) {
+        <mat-card class="profil" appearance="outlined">
+          <mat-card-content>
+            <div class="zaglavlje">
+              @if (slika(); as adresa) {
+                <img
+                  class="avatar"
+                  [src]="adresa"
+                  [alt]="'Profilna slika korisnika ' + p.korisnickoIme"
+                  (error)="slikaNijeUcitana.set(true)"
+                />
+              } @else {
+                <div class="avatar bez-slike" aria-hidden="true">{{ inicijal() }}</div>
+              }
+
+              <div class="osnovno">
+                <h1 class="ime">{{ p.korisnickoIme }}</h1>
+                <p class="region">
+                  <mat-icon fontSet="material-symbols-outlined">location_on</mat-icon>
+                  {{ region() }}
+                </p>
+                @if (mojProfil()) {
+                  <span class="oznaka">Vaš profil</span>
+                }
+              </div>
+
+              <div class="statistika">
+                <span class="broj">{{ p.brojObjavljenihRecepata }}</span>
+                <span class="opis">Objavljeni recepti</span>
+              </div>
+            </div>
+
+            <mat-divider />
+
+            <section class="biografija">
+              <h2>Biografija</h2>
+              @if (p.biografija) {
+                <p>{{ p.biografija }}</p>
+              } @else if (mojProfil()) {
+                <p class="prazno">Još niste dodali biografiju.</p>
+              } @else {
+                <p class="prazno">Korisnik još nije dodao biografiju.</p>
+              }
+            </section>
+          </mat-card-content>
+        </mat-card>
+      }
+    }
+
+    @case ('ne-postoji') {
+      <div class="poruka">
+        <mat-icon class="ikonica" fontSet="material-symbols-outlined">person_off</mat-icon>
+        <h2>Korisnik ne postoji</h2>
+        <p>Proverite korisničko ime u adresi.</p>
+        <a mat-flat-button routerLink="/pocetna">Na početnu</a>
+      </div>
+    }
+
+    @case ('greska') {
+      <div class="poruka">
+        <mat-icon class="ikonica" fontSet="material-symbols-outlined">error</mat-icon>
+        <h2>Profil trenutno ne može da se učita</h2>
+        <p>Pokušajte ponovo za nekoliko trenutaka.</p>
+      </div>
+    }
+  }
+</div>
