@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, map, tap } from 'rxjs';
+import { EMPTY, Observable, catchError, map, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   DostupnostOdgovor,
@@ -50,23 +50,38 @@ export class AuthService {
   }
 
   prijavi(zahtev: PrijavaZahtev): Observable<PrijavaOdgovor> {
-    return this.http.post<PrijavaOdgovor>(`${this.url}/prijava`, zahtev).pipe(
-      tap((odgovor) => {
-        const sesija: Sesija = {
-          token: odgovor.token,
-          istice: odgovor.istice,
-          korisnickoIme: odgovor.korisnickoIme,
-          uloga: odgovor.uloga,
-        };
-        localStorage.setItem(KLJUC_SESIJE, JSON.stringify(sesija));
-        this.sesija.set(sesija);
-      }),
-    );
+    return this.http
+      .post<PrijavaOdgovor>(`${this.url}/prijava`, zahtev)
+      .pipe(tap((odgovor) => this.sacuvajSesiju(odgovor)));
+  }
+
+  //Pri svakom otvaranju aplikacije vazeci token se menja novim, sa punim trajanjem, pa korisnik
+  //koji koristi aplikaciju ostaje prijavljen dok se sam ne odjavi. Ako token vise ne vazi (401),
+  //interceptor odjavljuje korisnika; ako server nije dostupan, sesija ostaje kakva je bila.
+  osveziSesiju(): void {
+    if (!this.token()) {
+      return;
+    }
+    this.http
+      .post<PrijavaOdgovor>(`${environment.apiUrl}/sesija/osvezi`, null)
+      .pipe(catchError(() => EMPTY))
+      .subscribe((odgovor) => this.sacuvajSesiju(odgovor));
   }
 
   odjavi(): void {
     localStorage.removeItem(KLJUC_SESIJE);
     this.sesija.set(null);
+  }
+
+  private sacuvajSesiju(odgovor: PrijavaOdgovor): void {
+    const sesija: Sesija = {
+      token: odgovor.token,
+      istice: odgovor.istice,
+      korisnickoIme: odgovor.korisnickoIme,
+      uloga: odgovor.uloga,
+    };
+    localStorage.setItem(KLJUC_SESIJE, JSON.stringify(sesija));
+    this.sesija.set(sesija);
   }
 
   //Token koji interceptor dodaje zahtevima; istekao token se ne salje i sesija se brise
