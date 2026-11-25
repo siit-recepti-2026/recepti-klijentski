@@ -3,7 +3,32 @@
     <mat-label>{{ izabranaStavka() ? 'Novi naziv stavke' : 'Naziv nove stavke' }}</mat-label>
     <input matInput #nazivPolje [formControl]="naziv" maxlength="100" />
   </mat-form-field>
-  <button mat-flat-button type="submit" [disabled]="naziv.invalid || cuvanje()">
+  @if (vrsta() === 'alergeni') {
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Opis alergena</mat-label>
+      <textarea matInput [formControl]="opis" maxlength="500" rows="2"></textarea>
+    </mat-form-field>
+    @if (namirnice(); as opcije) {
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Povezane namirnice</mat-label>
+        <mat-select [formControl]="izabraneNamirnice" multiple>
+          @for (namirnica of opcije; track namirnica.id) {
+            <mat-option [value]="namirnica.id">{{ namirnica.naziv }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    } @else if (greskaNamirnica()) {
+      <p role="alert">Namirnice trenutno nisu dostupne.</p>
+      <button mat-button type="button" (click)="ucitajNamirnice()">Učitaj ponovo</button>
+    } @else {
+      <p role="status">Učitavanje namirnica…</p>
+    }
+  }
+  <button
+    mat-flat-button
+    type="submit"
+    [disabled]="naziv.invalid || opis.invalid || cuvanje() || (vrsta() === 'alergeni' && namirnice() === null)"
+  >
     @if (cuvanje()) {
       Čuvanje…
     } @else if (izabranaStavka()) {

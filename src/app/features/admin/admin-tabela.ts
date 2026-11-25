@@ -68,10 +68,8 @@ export class AdminTabela implements AfterViewInit {
   protected readonly izvor = new MatTableDataSource<StavkaPregleda>();
 
   protected get kolone(): string[] {
-    if (this.prikaziOpis) {
-      return ['naziv', 'opis', 'aktivan'];
-    }
-    return this.vrsta ? ['naziv', 'aktivan', 'akcije'] : ['naziv', 'aktivan'];
+    const kolone = this.prikaziOpis ? ['naziv', 'opis', 'aktivan'] : ['naziv', 'aktivan'];
+    return this.vrsta ? [...kolone, 'akcije'] : kolone;
   }
 
   constructor() {

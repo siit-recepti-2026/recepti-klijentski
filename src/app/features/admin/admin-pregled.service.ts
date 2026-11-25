@@ -8,6 +8,17 @@ export interface StavkaPregleda {
   naziv: string;
   aktivan: boolean;
   opis: string | null;
+  namirniceIds?: number[];
+}
+
+export interface OpcijaNamirnice {
+  id: number;
+  naziv: string;
+}
+
+interface PodaciAlergena {
+  opis: string;
+  namirniceIds: number[];
 }
 
 export interface AdminPregled {
@@ -23,6 +34,7 @@ const putanjeLista = {
   tipoviObroka: 'tipovi-obroka',
   tipoviIshrane: 'tipovi-ishrane',
   kategorijeNamirnica: 'kategorije-namirnica',
+  alergeni: 'alergeni',
 } as const;
 
 export type VrstaListe = keyof typeof putanjeLista;
@@ -35,9 +47,13 @@ export class AdminPregledService {
     return this.http.get<AdminPregled>(`${environment.apiUrl}/admin/pregled`);
   }
 
-  dodaj(vrsta: VrstaListe, naziv: string) {
+  namirniceZaAlergene() {
+    return this.http.get<OpcijaNamirnice[]>(`${environment.apiUrl}/admin/alergeni/namirnice`);
+  }
+
+  dodaj(vrsta: VrstaListe, naziv: string, podaci?: PodaciAlergena) {
     return this.http
-      .post<StavkaPregleda>(`${environment.apiUrl}/admin/${putanjeLista[vrsta]}`, { naziv }, {
+      .post<StavkaPregleda>(`${environment.apiUrl}/admin/${putanjeLista[vrsta]}`, { naziv, ...podaci }, {
         observe: 'response',
       })
       .pipe(
@@ -50,10 +66,10 @@ export class AdminPregledService {
       );
   }
 
-  izmeni(vrsta: VrstaListe, id: number, naziv: string) {
+  izmeni(vrsta: VrstaListe, id: number, naziv: string, podaci?: PodaciAlergena) {
     return this.http.put<StavkaPregleda>(
       `${environment.apiUrl}/admin/${putanjeLista[vrsta]}/${id}`,
-      { naziv },
+      { naziv, ...podaci },
     );
   }
 

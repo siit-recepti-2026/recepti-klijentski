@@ -20,7 +20,7 @@ export class Admin implements OnInit {
 
   protected readonly pregled = signal<AdminPregled | null>(null);
   protected readonly greska = signal('');
-  protected readonly tabele: { kljuc: keyof AdminPregled; naslov: string }[] = [
+  protected readonly tabele: { kljuc: VrstaListe; naslov: string }[] = [
     { kljuc: 'tipoviJela', naslov: 'Tipovi jela' },
     { kljuc: 'tipoviObroka', naslov: 'Tipovi obroka' },
     { kljuc: 'tipoviIshrane', naslov: 'Tipovi ishrane' },

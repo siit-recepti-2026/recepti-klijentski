@@ -5,6 +5,7 @@ import { MatButtonHarness } from '@angular/material/button/testing';
 import { MatDialogHarness } from '@angular/material/dialog/testing';
 import { MatInputHarness } from '@angular/material/input/testing';
 import { MatPaginatorHarness } from '@angular/material/paginator/testing';
+import { MatSelectHarness } from '@angular/material/select/testing';
 import { MatSortHarness } from '@angular/material/sort/testing';
 import { MatTableHarness } from '@angular/material/table/testing';
 import { MAT_TABS_CONFIG } from '@angular/material/tabs';
@@ -34,9 +35,10 @@ describe('Admin', () => {
         {
           provide: AdminPregledService,
           useValue: {
-            dodaj: (_vrsta: string, naziv: string) =>
+            namirniceZaAlergene: () => of([{ id: 41, naziv: 'Pšenično brašno' }]),
+            dodaj: (_vrsta: string, naziv: string, podaci?: { opis: string; namirniceIds: number[] }) =>
               of({
-                stavka: { id: naziv === 'Užina' ? 7 : 20, naziv, opis: null, aktivan: true },
+                stavka: { id: naziv === 'Užina' ? 7 : 20, naziv, opis: null, aktivan: true, ...podaci },
                 ponovoAktivirana: naziv === 'Užina',
               }),
             izmeni: (_vrsta: string, id: number, naziv: string) =>
@@ -91,8 +93,32 @@ describe('Admin', () => {
     const tab = await tabs.getSelectedTab();
     const table = await tab.getHarness(MatTableHarness);
 
-    expect(await table.getCellTextByIndex()).toEqual([['Gluten', 'Pšenica', 'Neaktivno']]);
-    expect(await tab.getAllHarnesses(MatButtonHarness.with({ text: 'Dodaj' }))).toHaveLength(0);
+    expect((await table.getCellTextByIndex())[0].slice(0, 3)).toEqual([
+      'Gluten', 'Pšenica', 'Neaktivno',
+    ]);
+  });
+
+  it('dodaje alergen sa opisom i ponovo prikazuje vezu pri izmeni', async () => {
+    const tabs = await loader.getHarness(MatTabGroupHarness);
+    await tabs.selectTab({ label: 'Alergeni' });
+    const tab = await tabs.getSelectedTab();
+    const naziv = await tab.getHarness(MatInputHarness.with({ selector: 'input[maxlength="100"]' }));
+    const opis = await tab.getHarness(MatInputHarness.with({ selector: 'textarea' }));
+    const namirnice = await tab.getHarness(MatSelectHarness);
+    await naziv.setValue('Novi alergen');
+    await opis.setValue('Novi opis');
+    await namirnice.open();
+    await namirnice.clickOptions({ text: 'Pšenično brašno' });
+    await namirnice.close();
+    await (await tab.getHarness(MatButtonHarness.with({ text: 'Dodaj' }))).click();
+
+    const izmeni = await tab.getHarness(
+      MatButtonHarness.with({ selector: '[aria-label="Izmeni Novi alergen"]' }),
+    );
+    await izmeni.click();
+    expect(await naziv.getValue()).toBe('Novi alergen');
+    expect(await opis.getValue()).toBe('Novi opis');
+    expect(await namirnice.getValueText()).toBe('Pšenično brašno');
   });
 
   it('dodaje aktivan tip jela i odmah ga prikazuje u tabeli', async () => {
