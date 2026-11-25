@@ -1,1 +1,28 @@
-<p>notifikacije works!</p>
+<section class="notifikacije" aria-labelledby="naslov-notifikacija">
+  <h1 id="naslov-notifikacija">Sistemske notifikacije</h1>
+
+  @if (notifikacije(); as lista) {
+    @if (lista.length) {
+      <ul>
+        @for (notifikacija of lista; track notifikacija.id) {
+          <li>
+            <header>
+              <h2>{{ notifikacija.naslov }}</h2>
+              <time [attr.datetime]="notifikacija.vremeKreiranja">
+                {{ notifikacija.vremeKreiranja | date: 'dd.MM.yyyy. HH:mm' }}
+              </time>
+            </header>
+            <p>{{ notifikacija.poruka }}</p>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p role="status">Nema sistemskih notifikacija.</p>
+    }
+  } @else if (greska()) {
+    <p role="alert">Notifikacije trenutno ne mogu da se učitaju.</p>
+    <button mat-stroked-button type="button" (click)="ucitaj()">Pokušaj ponovo</button>
+  } @else {
+    <p role="status">Učitavanje notifikacija…</p>
+  }
+</section>
