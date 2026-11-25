@@ -48,6 +48,7 @@ const routes: Routes = [
   },
   {
     path: 'notifikacije',
+    canActivate: [prijavljenGuard],
     loadChildren: () =>
       import('./features/notifikacije/notifikacije.module').then((m) => m.NotifikacijeModule),
   },
