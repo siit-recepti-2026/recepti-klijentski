@@ -1,1 +1,51 @@
-<p>pocetna works!</p>
+<section class="pocetna">
+  <header class="zaglavlje">
+    <div>
+      <h1>{{ prikaz() === 'popularni' ? 'Popularni recepti' : 'Najnoviji recepti' }}</h1>
+      <p class="opis">
+        {{
+          prikaz() === 'popularni'
+            ? 'Najbolje ocenjeni recepti u poslednjih mesec dana'
+            : 'Poslednji objavljeni recepti'
+        }}
+      </p>
+    </div>
+
+    <mat-button-toggle-group
+      [value]="prikaz()"
+      (change)="promeniPrikaz($event.value)"
+      aria-label="Prikaz recepata"
+      hideSingleSelectionIndicator
+    >
+      <mat-button-toggle value="popularni">Popularni</mat-button-toggle>
+      <mat-button-toggle value="najnoviji">Najnoviji</mat-button-toggle>
+    </mat-button-toggle-group>
+  </header>
+
+  @if (ucitavanje()) {
+    <div class="stanje">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (greska()) {
+    <div class="stanje">
+      <p>Recepti trenutno ne mogu da se učitaju.</p>
+      <button mat-stroked-button type="button" (click)="ucitaj()">Pokušaj ponovo</button>
+    </div>
+  } @else if (recepti().length === 0) {
+    <div class="stanje">
+      <p>
+        {{
+          prikaz() === 'popularni'
+            ? 'U poslednjih mesec dana nijedan recept nije ocenjen.'
+            : 'Još nema objavljenih recepata.'
+        }}
+      </p>
+    </div>
+  } @else {
+    <div class="mreza">
+      @for (recept of recepti(); track recept.id) {
+        <app-kartica-recepta [recept]="recept" />
+      }
+    </div>
+  }
+</section>
