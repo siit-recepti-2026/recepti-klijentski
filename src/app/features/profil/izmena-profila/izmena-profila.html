@@ -1,0 +1,100 @@
+<mat-card class="izmena" appearance="outlined">
+  <mat-card-content>
+    <h1 class="naslov">Izmena profila</h1>
+
+    <form [formGroup]="forma" (ngSubmit)="sacuvaj()" class="forma" novalidate>
+      <section class="slika">
+        @if (prikazSlike(); as adresa) {
+          <img class="avatar" [src]="adresa" alt="Profilna slika" />
+        } @else {
+          <div class="avatar bez-slike" aria-hidden="true">{{ inicijal() }}</div>
+        }
+
+        <div class="dugmad-slike">
+          <input
+            #izbor
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            hidden
+            (change)="izaberiSliku($event)"
+          />
+          <button mat-stroked-button type="button" (click)="izbor.click()" [disabled]="salje()">
+            <mat-icon fontSet="material-symbols-outlined">photo_camera</mat-icon>
+            {{ prikazSlike() ? 'Promeni sliku' : 'Dodaj sliku' }}
+          </button>
+          @if (prikazSlike()) {
+            <button mat-button type="button" (click)="ukloni()" [disabled]="salje()">
+              Ukloni sliku
+            </button>
+          }
+          <p class="napomena">jpg, png ili webp, najviše 5 MB</p>
+          @if (greskaSlike()) {
+            <p class="greska-slike" role="alert">{{ greskaSlike() }}</p>
+          }
+        </div>
+      </section>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Korisničko ime</mat-label>
+        <input matInput [value]="profil().korisnickoIme" disabled />
+        <mat-icon matSuffix fontSet="material-symbols-outlined">lock</mat-icon>
+        <mat-hint>Korisničko ime ne može da se menja</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Biografija</mat-label>
+        <textarea
+          matInput
+          formControlName="biografija"
+          rows="5"
+          [maxlength]="maxBiografija"
+          placeholder="Napišite nešto o sebi i svom kuvanju"
+        ></textarea>
+        <mat-hint align="end">
+          {{ forma.controls.biografija.value.length }}/{{ maxBiografija }}
+        </mat-hint>
+        @if (forma.controls.biografija.hasError('maxlength')) {
+          <mat-error>Biografija može imati najviše {{ maxBiografija }} karaktera</mat-error>
+        } @else if (forma.controls.biografija.hasError('server')) {
+          <mat-error>{{ forma.controls.biografija.getError('server') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" subscriptSizing="dynamic">
+        <mat-label>Region</mat-label>
+        <mat-select formControlName="region">
+          @for (grupa of grupeRegiona; track grupa.drzava) {
+            <mat-optgroup [label]="grupa.drzava">
+              @for (r of grupa.regioni; track r.id) {
+                <mat-option [value]="r">{{ r.naziv }}</mat-option>
+              }
+            </mat-optgroup>
+          }
+        </mat-select>
+        <mat-hint>Novi region važi za recepte koje tek objavite</mat-hint>
+        @if (forma.controls.region.hasError('required')) {
+          <mat-error>Region je obavezan</mat-error>
+        } @else if (forma.controls.region.hasError('server')) {
+          <mat-error>{{ forma.controls.region.getError('server') }}</mat-error>
+        }
+      </mat-form-field>
+
+      @if (greska()) {
+        <p class="greska" role="alert">{{ greska() }}</p>
+      }
+
+      <div class="akcije">
+        <button mat-button type="button" (click)="otkazano.emit()" [disabled]="salje()">
+          Otkaži
+        </button>
+        <button mat-flat-button type="submit" [disabled]="salje()">
+          @if (salje()) {
+            <mat-spinner diameter="18" />
+          } @else {
+            Sačuvaj
+          }
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

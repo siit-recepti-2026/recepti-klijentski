@@ -1,0 +1,98 @@
+.izmena {
+  width: 100%;
+  max-width: 720px;
+}
+
+mat-card-content {
+  padding: 32px;
+}
+
+.naslov {
+  margin: 0 0 24px;
+  font: var(--mat-sys-headline-small);
+}
+
+.forma {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.slika {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 8px;
+}
+
+.avatar {
+  flex-shrink: 0;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--mat-sys-outline-variant);
+}
+
+.bez-slike {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font: var(--mat-sys-display-small);
+}
+
+.dugmad-slike {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+
+  .napomena,
+  .greska-slike {
+    flex-basis: 100%;
+    margin: 0;
+    font: var(--mat-sys-body-small);
+  }
+
+  .napomena {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .greska-slike {
+    color: var(--mat-sys-error);
+  }
+}
+
+.greska {
+  margin: 0;
+  color: var(--mat-sys-error);
+}
+
+.akcije {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+
+  button[type='submit'] {
+    min-width: 112px;
+  }
+}
+
+//Na uskom ekranu (telefon) slika i dugmad idu jedno ispod drugog
+@media (max-width: 600px) {
+  mat-card-content {
+    padding: 24px 16px;
+  }
+
+  .slika {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .dugmad-slike {
+    justify-content: center;
+  }
+}

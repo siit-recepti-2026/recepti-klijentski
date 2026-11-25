@@ -3,13 +3,10 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute } from '@angular/router';
 import { catchError, map, of, switchMap, tap } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { ProfilOdgovor } from '../../core/models/profil.models';
 import { AuthService } from '../../core/services/auth.service';
 import { ProfilService } from '../../core/services/profil.service';
-
-//Slike se sluze sa servera, a u bazi je samo putanja (/slike/ime.jpg)
-const ADRESA_SERVERA = environment.apiUrl.replace(/\/api$/, '');
+import { ADRESA_SERVERA } from '../../core/services/slika.service';
 
 type Stanje = 'ucitavanje' | 'prikaz' | 'ne-postoji' | 'greska';
 
@@ -28,6 +25,8 @@ export class Profil {
   protected readonly stanje = signal<Stanje>('ucitavanje');
   protected readonly profil = signal<ProfilOdgovor | null>(null);
   protected readonly slikaNijeUcitana = signal(false);
+  //Na svom profilu umesto prikaza moze da se otvori forma za izmenu
+  protected readonly izmena = signal(false);
 
   protected readonly mojProfil = computed(
     () =>
@@ -58,6 +57,7 @@ export class Profil {
         tap(() => {
           this.stanje.set('ucitavanje');
           this.slikaNijeUcitana.set(false);
+          this.izmena.set(false);
         }),
         switchMap((korisnickoIme) =>
           this.profilService.pregled(korisnickoIme).pipe(
@@ -75,5 +75,12 @@ export class Profil {
           this.stanje.set(status === 404 ? 'ne-postoji' : 'greska');
         }
       });
+  }
+
+  //Server vraca izmenjen profil, pa nema potrebe za novim ucitavanjem
+  protected sacuvano(profil: ProfilOdgovor): void {
+    this.profil.set(profil);
+    this.slikaNijeUcitana.set(false);
+    this.izmena.set(false);
   }
 }
