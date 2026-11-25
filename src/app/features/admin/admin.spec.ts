@@ -2,6 +2,7 @@ import { HarnessLoader } from '@angular/cdk/testing';
 import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonHarness } from '@angular/material/button/testing';
+import { MatDialogHarness } from '@angular/material/dialog/testing';
 import { MatInputHarness } from '@angular/material/input/testing';
 import { MatPaginatorHarness } from '@angular/material/paginator/testing';
 import { MatSortHarness } from '@angular/material/sort/testing';
@@ -40,6 +41,8 @@ describe('Admin', () => {
               }),
             izmeni: (_vrsta: string, id: number, naziv: string) =>
               of({ id, naziv, opis: null, aktivan: true }),
+            deaktiviraj: (_vrsta: string, id: number) =>
+              of({ id, naziv: 'Kategorija 01', opis: null, aktivan: false }),
             pregled: () =>
               of({
                 tipoviJela: [],
@@ -131,6 +134,29 @@ describe('Admin', () => {
     const table = await tab.getHarness(MatTableHarness);
     const prveStavke = await table.getCellTextByIndex();
     expect(prveStavke[0].slice(0, 2)).toEqual(['Ažurirana kategorija', 'Aktivno']);
+  });
+
+  it('deaktivira stavku samo kad je potvrđeno u dijalogu', async () => {
+    const tabs = await loader.getHarness(MatTabGroupHarness);
+    await tabs.selectTab({ label: 'Kategorije namirnica' });
+    const tab = await tabs.getSelectedTab();
+    const tabela = await tab.getHarness(MatTableHarness);
+    const deaktiviraj = await tab.getHarness(
+      MatButtonHarness.with({ selector: '[aria-label="Deaktiviraj Kategorija 01"]' }),
+    );
+    const rootLoader = TestbedHarnessEnvironment.documentRootLoader(fixture);
+
+    await deaktiviraj.click();
+    const potvrda = await rootLoader.getHarness(MatDialogHarness);
+    expect(await potvrda.getTitleText()).toBe('Deaktivacija stavke');
+    expect(await potvrda.getContentText()).toBe('Deaktivirati „Kategorija 01“?');
+    await (await potvrda.getHarness(MatButtonHarness.with({ text: 'Odustani' }))).click();
+    expect((await tabela.getCellTextByIndex())[0][1]).toBe('Aktivno');
+
+    await deaktiviraj.click();
+    const ponovnaPotvrda = await rootLoader.getHarness(MatDialogHarness);
+    await (await ponovnaPotvrda.getHarness(MatButtonHarness.with({ text: 'Deaktiviraj' }))).click();
+    expect((await tabela.getCellTextByIndex())[0][1]).toBe('Neaktivno');
   });
 
   it('ponovo aktivira postojeći red kada se ponovo unese njegov naziv', async () => {

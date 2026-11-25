@@ -4,7 +4,6 @@ import {
   Component,
   DestroyRef,
   Input,
-  TemplateRef,
   ViewChild,
   inject,
   output,
@@ -18,6 +17,10 @@ import { MatTableDataSource } from '@angular/material/table';
 
 import { filter, finalize, switchMap } from 'rxjs';
 
+import {
+  DijalogPotvrde,
+  PodaciDijalogaPotvrde,
+} from '../../shared/dijalog-potvrde/dijalog-potvrde';
 import { AdminPregledService, StavkaPregleda, VrstaListe } from './admin-pregled.service';
 
 function paginatorNaSrpskom(): MatPaginatorIntl {
@@ -91,7 +94,7 @@ export class AdminTabela implements AfterViewInit {
     this.izvor.filter = upit.trim().toLocaleLowerCase('sr-Latn');
     this.paginator.firstPage();
   }
-  protected traziPotvrdu(stavka: StavkaPregleda, potvrda: TemplateRef<unknown>): void {
+  protected traziPotvrdu(stavka: StavkaPregleda): void {
     const vrsta = this.vrsta;
     if (!vrsta || this.deaktiviranje()) {
       return;
@@ -101,7 +104,13 @@ export class AdminTabela implements AfterViewInit {
     this.porukaDeaktivacije.set('');
     this.deaktiviranje.set(true);
     this.dialog
-      .open<unknown, StavkaPregleda, boolean>(potvrda, { data: stavka })
+      .open<DijalogPotvrde, PodaciDijalogaPotvrde, boolean>(DijalogPotvrde, {
+        data: {
+          naslov: 'Deaktivacija stavke',
+          poruka: `Deaktivirati „${stavka.naziv}“?`,
+          tekstPotvrde: 'Deaktiviraj',
+        },
+      })
       .afterClosed()
       .pipe(
         filter((potvrdjeno) => potvrdjeno === true),
