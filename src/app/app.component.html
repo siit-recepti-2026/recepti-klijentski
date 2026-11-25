@@ -1,5 +1,14 @@
 <mat-toolbar class="traka">
   <a class="naziv" routerLink="/pocetna">Recepti</a>
+  <nav class="navigacija" aria-label="Glavna navigacija">
+    <a mat-button routerLink="/pocetna" routerLinkActive="aktivan">Početna</a>
+    <a mat-button routerLink="/pretraga" routerLinkActive="aktivan">Pretraga</a>
+    <a mat-button routerLink="/mapa" routerLinkActive="aktivan">Mapa</a>
+    @if (authService.prijavljen()) {
+      <a mat-button routerLink="/evidencija" routerLinkActive="aktivan">Moje namirnice</a>
+      <a mat-button routerLink="/kupovina" routerLinkActive="aktivan">Kupovina</a>
+    }
+  </nav>
   <span class="razmak"></span>
   @if (authService.prijavljen()) {
     @if (authService.jeAdministrator()) {
