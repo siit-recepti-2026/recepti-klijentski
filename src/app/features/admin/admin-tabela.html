@@ -43,7 +43,7 @@
           type="button"
           [attr.aria-label]="'Deaktiviraj ' + stavka.naziv"
           [disabled]="deaktiviranje()"
-          (click)="traziPotvrdu(stavka, potvrda)"
+          (click)="traziPotvrdu(stavka)"
         >
           Deaktiviraj
         </button>
@@ -62,12 +62,3 @@
 </table>
 
 <mat-paginator aria-label="Strane tabele" [pageSize]="10" [pageSizeOptions]="[5, 10, 25]" />
-
-<ng-template #potvrda let-stavka>
-  <h2 mat-dialog-title>Deaktivacija stavke</h2>
-  <mat-dialog-content>Deaktivirati „{{ stavka.naziv }}“?</mat-dialog-content>
-  <mat-dialog-actions align="end">
-    <button mat-button type="button" mat-dialog-close>Odustani</button>
-    <button mat-flat-button type="button" [mat-dialog-close]="true">Deaktiviraj</button>
-  </mat-dialog-actions>
-</ng-template>
