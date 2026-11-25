@@ -6,51 +6,68 @@
 
     @case ('prikaz') {
       @if (profil(); as p) {
-        <mat-card class="profil" appearance="outlined">
-          <mat-card-content>
-            <div class="zaglavlje">
-              @if (slika(); as adresa) {
-                <img
-                  class="avatar"
-                  [src]="adresa"
-                  [alt]="'Profilna slika korisnika ' + p.korisnickoIme"
-                  (error)="slikaNijeUcitana.set(true)"
-                />
-              } @else {
-                <div class="avatar bez-slike" aria-hidden="true">{{ inicijal() }}</div>
-              }
-
-              <div class="osnovno">
-                <h1 class="ime">{{ p.korisnickoIme }}</h1>
-                <p class="region">
-                  <mat-icon fontSet="material-symbols-outlined">location_on</mat-icon>
-                  {{ region() }}
-                </p>
-                @if (mojProfil()) {
-                  <span class="oznaka">Vaš profil</span>
+        @if (izmena() && mojProfil()) {
+          <app-izmena-profila
+            [profil]="p"
+            (sacuvano)="sacuvano($event)"
+            (otkazano)="izmena.set(false)"
+          />
+        } @else {
+          <mat-card class="profil" appearance="outlined">
+            <mat-card-content>
+              <div class="zaglavlje">
+                @if (slika(); as adresa) {
+                  <img
+                    class="avatar"
+                    [src]="adresa"
+                    [alt]="'Profilna slika korisnika ' + p.korisnickoIme"
+                    (error)="slikaNijeUcitana.set(true)"
+                  />
+                } @else {
+                  <div class="avatar bez-slike" aria-hidden="true">{{ inicijal() }}</div>
                 }
+
+                <div class="osnovno">
+                  <h1 class="ime">{{ p.korisnickoIme }}</h1>
+                  <p class="region">
+                    <mat-icon fontSet="material-symbols-outlined">location_on</mat-icon>
+                    {{ region() }}
+                  </p>
+                  @if (mojProfil()) {
+                    <span class="oznaka">Vaš profil</span>
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      class="izmeni"
+                      (click)="izmena.set(true)"
+                    >
+                      <mat-icon fontSet="material-symbols-outlined">edit</mat-icon>
+                      Izmeni profil
+                    </button>
+                  }
+                </div>
+
+                <div class="statistika">
+                  <span class="broj">{{ p.brojObjavljenihRecepata }}</span>
+                  <span class="opis">Objavljeni recepti</span>
+                </div>
               </div>
 
-              <div class="statistika">
-                <span class="broj">{{ p.brojObjavljenihRecepata }}</span>
-                <span class="opis">Objavljeni recepti</span>
-              </div>
-            </div>
+              <mat-divider />
 
-            <mat-divider />
-
-            <section class="biografija">
-              <h2>Biografija</h2>
-              @if (p.biografija) {
-                <p>{{ p.biografija }}</p>
-              } @else if (mojProfil()) {
-                <p class="prazno">Još niste dodali biografiju.</p>
-              } @else {
-                <p class="prazno">Korisnik još nije dodao biografiju.</p>
-              }
-            </section>
-          </mat-card-content>
-        </mat-card>
+              <section class="biografija">
+                <h2>Biografija</h2>
+                @if (p.biografija) {
+                  <p>{{ p.biografija }}</p>
+                } @else if (mojProfil()) {
+                  <p class="prazno">Još niste dodali biografiju.</p>
+                } @else {
+                  <p class="prazno">Korisnik još nije dodao biografiju.</p>
+                }
+              </section>
+            </mat-card-content>
+          </mat-card>
+        }
       }
     }
 
